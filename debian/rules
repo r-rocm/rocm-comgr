@@ -7,7 +7,7 @@ ROCM_PATH=/opt/rocm-${ROCM_VERSION}
 MAKEOPTS := "-j$(shell nproc)"
 TOP_DIR := $(shell pwd)/amd/comgr
 BUILD_PATH := ${TOP_DIR}/rocm-build
-DEB_INST_DIR := $(TOP_DIR)/debian/rocm-comgr
+DEB_INST_DIR := $(shell pwd)/debian/rocm-comgr
 
 VERBOSE_OPTS="AMD_COMGR_EMIT_VERBOSE_LOGS=1 AMD_COMGR_REDIRECT_LOGS=stdout"
 
