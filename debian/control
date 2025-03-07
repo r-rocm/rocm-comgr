@@ -1,0 +1,19 @@
+Source: rocm-comgr
+Section: devel
+Priority: optional
+Maintainer: CHEN Xuan <chenxuan@iscas.ac.cn>
+Rules-Requires-Root: no
+Build-Depends:
+ debhelper-compat (= 13),
+ cmake,
+Standards-Version: 4.7.0
+Homepage: <insert the upstream URL, if relevant>
+Vcs-Browser: https://github.com/r-rocm/rocm-comgr
+Vcs-Git: https://github.com/r-rocm/rocm-comgr.git
+
+Package: rocm-comgr
+Architecture: any
+Depends:
+ ${shlibs:Depends},
+ ${misc:Depends},
+Description: rocm-comgr

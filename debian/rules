@@ -1,0 +1,44 @@
+#!/usr/bin/make -f
+
+export DH_VERBOSE = 1
+
+ROCM_VERSION=6.2.4
+ROCM_PATH=/opt/rocm-${ROCM_VERSION}
+MAKEOPTS := "-j$(shell nproc)"
+TOP_DIR := $(shell pwd)/amd/comgr
+BUILD_PATH := ${TOP_DIR}/rocm-build
+DEB_INST_DIR := $(TOP_DIR)/debian/rocm-comgr
+
+VERBOSE_OPTS="AMD_COMGR_EMIT_VERBOSE_LOGS=1 AMD_COMGR_REDIRECT_LOGS=stdout"
+
+%:
+	dh $@
+
+# 6.2.4 -> 60204
+override_dh_auto_configure:
+	cmake -S ${TOP_DIR} -B ${BUILD_PATH} \
+		-DCMAKE_INSTALL_PREFIX=${ROCM_PATH} \
+		-DCMAKE_BUILD_TYPE=Release \
+		-DCMAKE_C_COMPILER=${ROCM_PATH}/bin/clang \
+		-DCMAKE_CXX_COMPILER=${ROCM_PATH}/bin/clang++ \
+		-DBUILD_SHARED_LIBS=ON \
+		-DCMAKE_DISABLE_FIND_PACKAGE_hip=TRUE \
+		-DCMAKE_CTEST_ARGUMENTS="--exclude-regex;multithread_test" \
+		-DLLVM_LINK_LLVM_DYLIB=OFF \
+		-DLLVM_ENABLE_LIBCXX=OFF \
+		-DCMAKE_PREFIX_PATH="${CMAKE_PREFIX_PATH}:${ROCM_PATH}"
+
+# TODO: Test disabled due to gtest linking issues
+#		-DBUILD_TESTS=ON
+
+override_dh_auto_build:
+	cmake --build $(BUILD_PATH) -- ${MAKEOPTS}
+
+override_dh_auto_test:
+	cmake --build $(BUILD_PATH) -- ${MAKEOPTS} test
+
+override_dh_auto_install:
+	DESTDIR=$(DEB_INST_DIR)/ cmake --build $(BUILD_PATH) -- ${MAKEOPTS} install
+
+override_dh_install:
+	echo "dh_install skipped"
